@@ -70,12 +70,16 @@
             $("#click-value").html(clickCounter);
             console.log(snapshot.val().clicked);
             $(".katamari").addClass(iconClass);
+        },
+        function(error){
+            console.log(error);
         })
 
         //restart
         $("#restart-button").on("click", function () {
             database.ref().set({
                 clicked: 10,
+                leveled: 1,
             })
             level = 1;
             initialValue = 10;
