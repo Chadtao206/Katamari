@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://www.gstatic.com/firebasejs/5.3.0/firebase.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ"
+        crossorigin="anonymous">
+    <title>Document</title>
+</head>
+
+<body>
+    <div style="margin:auto; text-align:center;" class="container">
+    <h1>Stupid Katamari</h1>
+    <h1>Level -
+        <span id="level">1</span>
+    </h1>
+    <h1>Only
+        <span id="click-value"></span> clicks to go!!</h1>
+
+    <button id="click-button">Click Me to Roll Katamari!</button>
+    <button id="restart-button">Restart</button>
+    <br>
+    <br>
+    <br>
+    <div>
+        <i class="fas fa-male"></i>&nbsp;
+        <i class="katamari fas fa-volleyball-ball fa-spin fa-1x"></i>
+    </div>
+    </div>
+
+    <script>
+        // Initialize Firebase
+        var config = {
+            apiKey: "AIzaSyDWdZhACWTMsF1J8W2tMbPIvNoQeDUb_MI",
+            authDomain: "chad-counter.firebaseapp.com",
+            databaseURL: "https://chad-counter.firebaseio.com",
+            projectId: "chad-counter",
+            storageBucket: "",
+            messagingSenderId: "762768388202"
+        };
+        firebase.initializeApp(config);
+        var database = firebase.database();
+        var level = 1;
+        var initialValue = 10;
+        var clickCounter = initialValue * level;
+        var iconClass = "fa-" + level + "x";
+        $("#click-button").on("click", function () {
+            clickCounter--;
+            if (clickCounter === 0) {
+                level++;
+                clickCounter = initialValue * level;
+                iconClass = "fa-" + level + "x";
+                $(".katamari").addClass(iconClass);
+            }
+            database.ref().set({
+                clicked: clickCounter,
+                leveled: level,
+            });
+        })
+        database.ref().on("value", function (snapshot) {
+            clickCounter = snapshot.val().clicked;
+            level = snapshot.val().leveled;
+            iconClass = "fa-" + level + "x";
+            $("#level").html(level);
+            $("#click-value").html(clickCounter);
+            console.log(snapshot.val().clicked);
+            $(".katamari").addClass(iconClass);
+        })
+
+        //restart
+        $("#restart-button").on("click", function () {
+            database.ref().set({
+                clicked: 10,
+            })
+            level = 1;
+            initialValue = 10;
+            clickCounter = initialValue * level;
+            $("#level").html(level);
+            $("#click-value").html(clickCounter);
+            for (i=1;i<11;i++){
+                $(".katamari").removeClass("fa-" + i + "x")
+            }
+        })
+
+    </script>
+
+</body>
+
+</html>
